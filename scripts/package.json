@@ -1,0 +1,30 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "Scripts to automate certain ncash instructions",
+  "license": "See License in <https://github.com/ncashprotocol/.github/blob/main/LICENSE>",
+  "bugs": {
+		"url": "https://github.com/ncashprotocol/ncash-solana-sdk/issues"
+	},
+	"homepage": "https://github.com/ncashprotocol/ncash-solana-sdk/",
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.24",
+    "ts-node": "^10.9.2",
+    "typescript": "*",
+    "@ncashprotocol/solana-sdk": "0.1.0"
+  },
+  "scripts": {
+    "backfill": "ts-node src/tx/backFillEpoch.ts",
+    "add-epoch": "ts-node src/tx/createEpoch.ts",
+    "setup": "ts-node src/tx/setupProgram.ts"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@solana/spl-token": "^0.3.6",
+    "@solana/web3.js": "^1.70.3",
+    "dotenv": "^16.4.5",
+    "fs-extra": "^11.2.0"
+  }
+}

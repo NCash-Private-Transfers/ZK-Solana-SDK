@@ -1,0 +1,26 @@
+[package]
+name = "ncash-solana"
+version = "0.1.0"
+description = "ncash Protocol SDK for Solana"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+homepage = "https://www.ncashprotocol.org/"
+repository = "https://gitlab.ncashprotocol.org/ncash-clients/solana-sdk"
+readme = "../../README.md"
+keywords = ["ZKPs", "Solana", "Anchor"]
+
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "ncash"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.29.0"
+hex = "0.4.3"
