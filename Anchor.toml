@@ -1,0 +1,19 @@
+[toolchain]
+anchor_version = "0.29.0"
+
+[features]
+seeds = false
+skip-lint = false
+
+[programs.devnet]
+ncash = "2NRByeqyVqXf4LByQP8aTAnWToK9zCwV8JSBZTW2gQAq"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "npx mocha --node-option require=ts-node/register --extension ts -t 1000000 tests/index.ts"

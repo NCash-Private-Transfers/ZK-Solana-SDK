@@ -1,0 +1,43 @@
+{
+  "private": true,
+  "license": "See License in <https://github.com/ncashprotocol/.github/blob/main/LICENSE>",
+  "bugs": {
+    "url": "https://github.com/ncashprotocol/ncash-solana-sdk/issues"
+  },
+  "homepage": "https://github.com/ncashprotocol/ncash-solana-sdk/",
+  "workspaces": [
+    "sdk",
+    "scripts"
+  ],
+  "scripts": {
+    "generate-sdk": "yarn workspace @ncashprotocol/solana-sdk generate",
+    "build-sdk": "yarn workspace @ncashprotocol/solana-sdk build",
+    "build": "yarn generate-sdk && yarn build-sdk",
+    "test": "yarn build && anchor test",
+    "backfill": "yarn workspace scripts backfill",
+    "add-epoch": "yarn workspace scripts add-epoch --",
+    "setup": "yarn workspace scripts setup"
+  },
+  "devDependencies": {
+    "@solana/spl-memo": "^0.2.3",
+    "@solana/spl-token": "*",
+    "@types/bn.js": "5.1.0",
+    "@types/mocha": "10.0.1",
+    "@types/node-fetch": "2.6.2",
+    "ethers": "6.11.1",
+    "mocha": "10.2.0",
+    "prettier": "^2.6.2",
+    "js-sha256": "^0.9.0",
+    "snake-case": "^3.0.4",
+    "ts-node": "10.9.1",
+    "typescript": "*"
+  },
+  "resolutions": {
+    "@solana/web3.js": "1.70.3",
+    "@solana/spl-token": "0.3.6",
+    "typescript": "4.9.4",
+    "ethers": "6.11.1",
+    "@coral-xyz/anchor": "^0.29.0"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}
