@@ -9,7 +9,7 @@ pub struct AddEpochEvent {
     // Epoch Config
     pub epoch_config: Pubkey,
     // Index
-    pub index: u32,
+    pub index: u8,
     // Epoch Creation timestamp
     pub created_at: i64,
     // Epoch Expiration timestamp
@@ -23,7 +23,7 @@ pub struct AddEpochEvent {
 #[event]
 pub struct CreateGroupEvent {
     // Group ID
-    pub id: u32,
+    pub id: u8,
     // Group PDA
     pub group_address: Pubkey,
     // Provider
