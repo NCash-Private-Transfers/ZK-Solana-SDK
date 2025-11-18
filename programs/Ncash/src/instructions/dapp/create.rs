@@ -1,16 +1,15 @@
-use crate::constants::*;
-use crate::events::CreateDappEvent;
-use crate::state::*;
-use crate::utils::fetch_dapp_id;
-
 use anchor_lang::prelude::*;
 
+use crate::{constants::*, events::CreateDappEvent, state::*, utils::fetch_dapp_id};
+
 #[derive(Accounts)]
+#[instruction(args: CreateDappArgs)]
 pub struct CreateDapp<'info> {
+    /// Dapp account being created
     #[account(
         init,
-        payer = creator,
-        space = Dapp::size(),
+        payer = payer,
+        space = Dapp::LEN,
         seeds = [
             SEED_PREFIX,
             SEED_DAPP,
@@ -21,6 +20,7 @@ pub struct CreateDapp<'info> {
     )]
     pub dapp: Account<'info, Dapp>,
 
+    /// Group this dapp belongs to
     #[account(
         seeds = [
             SEED_PREFIX,
@@ -28,45 +28,54 @@ pub struct CreateDapp<'info> {
             group.provider.as_bytes(),
         ],
         bump = group.bump
-        // TODO: If the below case is true, need to create validation for creator here
+        // TODO: Add validation if creator needs to be authorized by group
     )]
     pub group: Account<'info, Group>,
 
+    /// Key used for deterministic dapp address derivation
+    /// Must sign to prove ownership of the create key
     pub create_key: Signer<'info>,
 
-    // TODO: Not sure if the dapp creator is required to check with the group creator
+    /// Payer for account creation
     #[account(mut)]
-    pub creator: Signer<'info>,
+    pub payer: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }
 
-pub fn create(ctx: Context<CreateDapp>, args: CreateDappArgs) -> Result<()> {
-    let dapp = &mut ctx.accounts.dapp;
-    let creator = &ctx.accounts.creator;
-
-    let group_root = args.group_root;
-
-    let id = fetch_dapp_id(creator.key, group_root)?;
-
-    dapp.set_inner(Dapp {
-        bump: ctx.bumps.dapp,
-        create_key: ctx.accounts.create_key.key(),
-        creator: ctx.accounts.creator.key(),
-        group: ctx.accounts.group.key(),
-        group_root,
-        id,
-    });
-
-    dapp.validate()?;
-
-    emit!(CreateDappEvent { id });
-
-    Ok(())
-}
-
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct CreateDappArgs {
-    // Currently this is a dummy value, just to replicate ethereum's code structure
+    /// Merkle root for group membership verification
+    /// Currently placeholder to match Ethereum structure
     group_root: u64,
+}
+
+impl CreateDapp<'_> {
+    pub fn execute(ctx: Context<Self>, args: CreateDappArgs) -> Result<()> {
+        let Self {
+            dapp,
+            group,
+            create_key,
+            payer,
+            ..
+        } = ctx.accounts;
+
+        // Generate deterministic dapp ID
+        let dapp_id = fetch_dapp_id(payer.key(), args.group_root)?;
+
+        // Initialize dapp state
+        dapp.init(DappData {
+            bump: ctx.bumps.dapp,
+            create_key: create_key.key(),
+            creator: payer.key(),
+            group: group.key(),
+            group_root: args.group_root,
+            id: dapp_id,
+        })?;
+
+        // Emit creation event
+        emit!(CreateDappEvent { id: dapp_id });
+
+        Ok(())
+    }
 }
