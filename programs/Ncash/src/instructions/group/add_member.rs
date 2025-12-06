@@ -126,9 +126,3 @@ pub fn add_member(ctx: Context<AddMemberGroup>, args: AddMemberGroupArgs) -> Res
 
     Ok(())
 }
-
-#[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct AddMemberGroupArgs {
-    pub claim_info: ClaimInfo,
-    pub signed_claim: SignedClaim,
-}
