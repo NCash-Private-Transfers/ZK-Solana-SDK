@@ -40,7 +40,7 @@ const walletKeypair = Keypair.fromSecretKey(
       createKey: epochCreator.publicKey,
     });
 
-    console.log(`Epoch config address: ${epochConfigPda.toString()}`);
+
 
     const computeLimitFeeIx = createComputeLimitAndFeeIx(400_000, 1);
     const createEpochConfigIx = createInitializeEpochConfigInstruction(
@@ -63,7 +63,6 @@ const walletKeypair = Keypair.fromSecretKey(
           epochIndex: Number(epochIndex + 1),
         });
 
-        console.log(`Epoch address: ${epochPda.toString()}`);
 
         return createAddEpochInstruction(
           {
@@ -90,7 +89,6 @@ const walletKeypair = Keypair.fromSecretKey(
       [epochCreator]
     );
 
-    console.log(`Epochs backfilled successfully: ${signature}`);
   } catch (err) {
     console.error("Failed to backfill epochs:", err);
   }
@@ -99,7 +97,7 @@ const walletKeypair = Keypair.fromSecretKey(
     witnesses: [
       {
         id: "0x244897572368eadf65bfbc5aec98d8e5443a9072",
-        url: "https://ncash-node.questbook.app",
+        url: "https://ncash-node.app",
       },
     ],
     minimumWitnessesForClaim: 1,
