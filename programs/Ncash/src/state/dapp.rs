@@ -19,7 +19,7 @@ pub struct Dapp {
 impl Dapp {
     pub fn size() -> usize {
         8 + // Anchor discriminator
-        4 + // Dapp ID
+        8 + // Dapp ID
         8 + // Group root
         1 + // Bump
         32 + // Create key
