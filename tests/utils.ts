@@ -50,25 +50,102 @@ export async function sendTransaction(
   instructions: TransactionInstruction[],
   payer: PublicKey,
   signers: Signer[],
-  skipPreflight: boolean = false
-) {
+  options: {
+    skipPreflight?: boolean;
+    commitment?: Commitment;
+    maxRetries?: number;
+  } = {}
+): Promise<string> {
+  const {
+    skipPreflight = false,
+    commitment = 'confirmed',
+    maxRetries = 0,
+  } = options;
+
+  // Get latest blockhash
   const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+  
+  // Create and sign transaction
+  const tx = createAndSignTransaction(instructions, payer, blockhash, signers);
+  
+  // Send transaction with retry logic
+  const signature = await sendWithRetry(
+    connection,
+    tx,
+    { skipPreflight, maxRetries }
+  );
+  
+  // Wait for confirmation
+  await confirmTransaction(
+    connection,
+    signature,
+    { blockhash, lastValidBlockHeight, commitment }
+  );
+  
+  return signature;
+}
+
+/**
+ * Creates and signs a versioned transaction
+ */
+function createAndSignTransaction(
+  instructions: TransactionInstruction[],
+  payer: PublicKey,
+  blockhash: string,
+  signers: Signer[]
+): VersionedTransaction {
   const message = new TransactionMessage({
     instructions,
     payerKey: payer,
     recentBlockhash: blockhash,
   }).compileToV0Message();
-
+  
   const tx = new VersionedTransaction(message);
   tx.sign(signers);
-  const signature = await connection.sendRawTransaction(tx.serialize(), {
-    skipPreflight,
-  });
-  await connection.confirmTransaction({
-    blockhash,
-    lastValidBlockHeight,
-    signature,
-  });
+  return tx;
+}
 
-  return signature;
+/**
+ * Sends transaction with optional retry logic
+ */
+async function sendWithRetry(
+  connection: Connection,
+  tx: VersionedTransaction,
+  options: { skipPreflight: boolean; maxRetries: number }
+): Promise<string> {
+  const { skipPreflight, maxRetries } = options;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await connection.sendRawTransaction(tx.serialize(), {
+        skipPreflight,
+        maxRetries: 0, // Handle retries manually
+      });
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+      // Optional: Add delay between retries
+      await new Promise(resolve => setTimeout(resolve, 100 * (attempt + 1)));
+    }
+  }
+  
+  throw new Error('Failed to send transaction after retries');
+}
+
+/**
+ * Confirms transaction with commitment level
+ */
+async function confirmTransaction(
+  connection: Connection,
+  signature: string,
+  params: {
+    blockhash: string;
+    lastValidBlockHeight: number;
+    commitment?: Commitment;
+  }
+): Promise<void> {
+  await connection.confirmTransaction({
+    blockhash: params.blockhash,
+    lastValidBlockHeight: params.lastValidBlockHeight,
+    signature,
+  }, params.commitment);
 }
