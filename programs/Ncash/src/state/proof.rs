@@ -62,22 +62,22 @@ impl ClaimData {
         .join("\n")
     }
 
-    pub fn serialize_for_witness(&self, epoch_minimum_witness: usize) -> String {
-        let ClaimData {
-            identifier,
-            timestamp,
-            epoch_index,
-            ..
-        } = self;
+    // pub fn serialize_for_witness(&self, epoch_minimum_witness: usize) -> String {
+    //     let ClaimData {
+    //         identifier,
+    //         timestamp,
+    //         epoch_index,
+    //         ..
+    //     } = self;
 
-        let identifier = append_0x(&hex::encode(identifier));
+    // let identifier = append_0x(&hex::encode(identifier));
 
-        [
-            identifier,
-            epoch_index.to_string(),
-            epoch_minimum_witness.to_string(),
-            timestamp.to_string(),
-        ]
-        .join("\n")
-    }
+    // [
+    //     identifier,
+    //     epoch_index.to_string(),
+    //     epoch_minimum_witness.to_string(),
+    //     timestamp.to_string(),
+    // ]
+    // .join("\n")
+    // }
 }
